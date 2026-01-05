@@ -116,7 +116,7 @@ export class PolymarketClient {
     }
   }
 
-  async getTraderHistory(address: string, limit: number = 100): Promise<PolymarketTrade[]> {
+  async getTraderHistory(_address: string, _limit = 100): Promise<PolymarketTrade[]> {
     // Note: This would require a custom indexer or The Graph
     // For now, we'll return empty array as placeholder
     console.warn('Trader history requires custom indexer implementation')

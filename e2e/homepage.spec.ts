@@ -2,8 +2,6 @@ import { test, expect } from './fixtures/test-fixtures';
 import {
   expectPageToLoad,
   waitForElement,
-  expectElementToContainText,
-  getElementCount,
 } from './utils/test-helpers';
 
 test.describe('Homepage', () => {
@@ -79,7 +77,7 @@ test.describe('Homepage', () => {
 test.describe('Homepage with mocked data', () => {
   test.use({ mockApis: undefined });
 
-  test.beforeEach(async ({ page, mockApis }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
 
@@ -137,10 +135,6 @@ test.describe('Navigation and Accessibility', () => {
 
     // Try tabbing through interactive elements
     await page.keyboard.press('Tab');
-
-    // Check if focus is visible (at least one element should be focusable)
-    const focusedElement = page.locator(':focus');
-    const count = await focusedElement.count();
 
     // It's okay if count is 0 on first tab, but let's tab a few more times
     for (let i = 0; i < 5; i++) {

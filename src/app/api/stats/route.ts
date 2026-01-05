@@ -26,7 +26,7 @@ export async function GET() {
       .select('suspicion_score')
 
     const avgScore = avgData && avgData.length > 0
-      ? avgData.reduce((sum, t: any) => sum + t.suspicion_score, 0) / avgData.length
+      ? avgData.reduce((sum, t: { suspicion_score: number }) => sum + t.suspicion_score, 0) / avgData.length
       : 0
 
     // Get recent activity (last 24 hours)
@@ -46,7 +46,7 @@ export async function GET() {
       .limit(10)
 
     // Count unique traders
-    const uniqueTraders = new Set(topTraders?.map((t: any) => t.trader_address) || [])
+    const uniqueTraders = new Set(topTraders?.map((t: { trader_address: string }) => t.trader_address) || [])
 
     return NextResponse.json({
       success: true,

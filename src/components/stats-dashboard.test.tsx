@@ -25,7 +25,7 @@ describe('StatsDashboard', () => {
       Promise.resolve({
         json: () => Promise.resolve({ success: true, stats: mockStats }),
       })
-    ) as any
+    ) as unknown as typeof fetch
 
     render(<StatsDashboard />)
 
@@ -48,7 +48,7 @@ describe('StatsDashboard', () => {
       Promise.resolve({
         json: () => Promise.resolve({ success: false }),
       })
-    ) as any
+    ) as unknown as typeof fetch
 
     const { container } = render(<StatsDashboard />)
 
@@ -60,7 +60,7 @@ describe('StatsDashboard', () => {
   it('handles fetch errors gracefully', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    global.fetch = vi.fn(() => Promise.reject(new Error('Network error'))) as any
+    global.fetch = vi.fn(() => Promise.reject(new Error('Network error'))) as unknown as typeof fetch
 
     const { container } = render(<StatsDashboard />)
 
@@ -77,7 +77,7 @@ describe('StatsDashboard', () => {
       Promise.resolve({
         json: () => Promise.resolve({ success: false }),
       })
-    ) as any
+    ) as unknown as typeof fetch
 
     render(<StatsDashboard />)
 

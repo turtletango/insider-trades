@@ -113,7 +113,7 @@ export function TradesTable() {
           <div className="text-center py-8">Loading trades...</div>
         ) : trades.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            No suspicious trades found. Click "Analyze New Trades" to scan recent activity.
+            No suspicious trades found. Click &quot;Analyze New Trades&quot; to scan recent activity.
           </div>
         ) : (
           <Table>

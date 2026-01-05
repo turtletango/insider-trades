@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { TradesTable } from './trades-table'
 
@@ -18,7 +18,7 @@ describe('TradesTable', () => {
       Promise.resolve({
         json: () => Promise.resolve({ success: true, trades: [] }),
       })
-    ) as any
+    ) as unknown as typeof fetch
 
     render(<TradesTable />)
 
@@ -47,7 +47,7 @@ describe('TradesTable', () => {
       Promise.resolve({
         json: () => Promise.resolve({ success: true, trades: mockTrades }),
       })
-    ) as any
+    ) as unknown as typeof fetch
 
     render(<TradesTable />)
 
@@ -77,7 +77,7 @@ describe('TradesTable', () => {
         })
       }
       return Promise.reject(new Error('Unknown endpoint'))
-    }) as any
+    }) as unknown as typeof fetch
 
     render(<TradesTable />)
 
@@ -112,7 +112,7 @@ describe('TradesTable', () => {
         })
       }
       return Promise.reject(new Error('Unknown endpoint'))
-    }) as any
+    }) as unknown as typeof fetch
 
     render(<TradesTable />)
 
@@ -131,7 +131,7 @@ describe('TradesTable', () => {
       Promise.resolve({
         json: () => Promise.resolve({ success: true, trades: [] }),
       })
-    ) as any
+    ) as unknown as typeof fetch
 
     render(<TradesTable />)
 
@@ -145,7 +145,7 @@ describe('TradesTable', () => {
   it('handles fetch errors gracefully', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    global.fetch = vi.fn(() => Promise.reject(new Error('Network error'))) as any
+    global.fetch = vi.fn(() => Promise.reject(new Error('Network error'))) as unknown as typeof fetch
 
     render(<TradesTable />)
 
