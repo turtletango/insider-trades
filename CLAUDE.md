@@ -25,6 +25,16 @@ docs: update README with installation steps
 refactor: simplify trade analysis logic
 ```
 
+### Pull Request Titles
+PR titles should also follow the Conventional Commits specification, using the same format and types as commit messages. This ensures consistency across commits and PRs, and makes it easier to understand the changes at a glance.
+
+**Example PR titles:**
+```
+feat: add insider trading detection algorithm
+fix: resolve API rate limiting issue
+docs: update development guidelines
+```
+
 ## Quality Checks
 
 Before committing or pushing changes, verify that your code passes:
