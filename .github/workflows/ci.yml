@@ -42,6 +42,7 @@ jobs:
           name: build-output
           path: .next
           retention-days: 1
+          if-no-files-found: error
 
   unit-tests:
     needs: build
@@ -61,12 +62,6 @@ jobs:
         with:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-output
-          path: .next
 
       - name: Run unit tests
         run: npm run test:ci
