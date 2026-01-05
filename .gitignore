@@ -15,7 +15,6 @@
 /test-results/
 /playwright-report/
 /playwright/.cache/
-**/*.spec.ts-snapshots/
 
 # next.js
 /.next/
