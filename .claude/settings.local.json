@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run test:e2e:*)",
+      "Bash(find:*)",
+      "Bash(npm run test:ci:*)",
+      "Bash(npm run lint)",
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
+      "Bash(gh pr create:*)",
+      "Bash(git commit:*)",
+      "Bash(ls:*)",
+      "Bash(git branch:*)",
+      "Bash(git check-ignore:*)"
+    ]
+  }
+}
