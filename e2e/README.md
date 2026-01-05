@@ -23,24 +23,26 @@ Before running tests, ensure you have:
 ### Basic Commands
 
 ```bash
-# Run all tests (headless mode)
-npm test
+# Run all E2E tests (headless mode)
+npm run test:e2e
 
 # Run tests with visible browser
-npm run test:headed
+npm run test:e2e:headed
 
 # Run tests in UI mode (interactive)
-npm run test:ui
+npm run test:e2e:ui
 
 # Run tests in debug mode
-npm run test:debug
+npm run test:e2e:debug
 
 # Open test report
-npm run test:report
+npm run test:e2e:report
 
 # Generate new tests using Playwright codegen
-npm run test:codegen
+npm run test:e2e:codegen
 ```
+
+Note: The main `npm test` command runs unit tests. Use `npm run test:e2e` for end-to-end tests.
 
 ### Advanced Usage
 
@@ -221,13 +223,13 @@ test.describe('With Mocked APIs', () => {
 
 ```bash
 # Run with headed browser to see what's happening
-npm run test:headed
+npm run test:e2e:headed
 
 # Use UI mode for interactive debugging
-npm run test:ui
+npm run test:e2e:ui
 
 # Use debug mode with Playwright Inspector
-npm run test:debug
+npm run test:e2e:debug
 ```
 
 ### Screenshots and Videos
@@ -285,7 +287,7 @@ jobs:
           node-version: '18'
       - run: npm ci
       - run: npx playwright install --with-deps
-      - run: npm test
+      - run: npm run test:e2e
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
@@ -300,7 +302,7 @@ jobs:
 
 Example:
 ```bash
-BASE_URL=http://localhost:4000 npm test
+BASE_URL=http://localhost:4000 npm run test:e2e
 ```
 
 ## Troubleshooting
@@ -336,7 +338,7 @@ If port 3000 is busy:
 lsof -ti:3000 | xargs kill -9
 
 # Or use a different port
-BASE_URL=http://localhost:4000 npm test
+BASE_URL=http://localhost:4000 npm run test:e2e
 ```
 
 ## Resources
