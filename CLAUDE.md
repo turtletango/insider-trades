@@ -7,7 +7,7 @@ Make commits to your feature branch as you complete logical units of work. Use t
 
 **Format:** `<type>[optional scope]: <description>`
 
-**Types:**
+**Types (use only these prefixes):**
 - `feat`: A new feature
 - `fix`: A bug fix
 - `docs`: Documentation only changes
