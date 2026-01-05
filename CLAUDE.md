@@ -45,3 +45,7 @@ npm run build   # Verify the project builds successfully
 ```
 
 Fix any issues before proceeding with commits.
+
+## Claude Code Settings
+
+Changes to `.claude/settings.local.json` should be committed to git. This file contains project-specific Claude Code permissions that should be shared across the team.
