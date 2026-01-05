@@ -1,17 +1,13 @@
 import { NextResponse } from 'next/server'
 import { polymarketClient } from '@/lib/polymarket-client'
 import { insiderDetector } from '@/lib/insider-detection'
-import { supabase } from '@/lib/supabase'
 import type { SuspiciousTrade } from '@/types/polymarket'
-import type { Database } from '@/types/database'
-
-type SuspiciousTradeInsert = Database['public']['Tables']['suspicious_trades']['Insert']
 
 export const dynamic = 'force-dynamic'
 
 /**
  * POST /api/analyze
- * Fetches recent trades, analyzes them for suspicious activity, and stores in Supabase
+ * Fetches recent trades, analyzes them for suspicious activity, and returns results directly
  */
 export async function POST(request: Request) {
   try {
@@ -26,13 +22,14 @@ export async function POST(request: Request) {
         message: 'No trades found',
         analyzed: 0,
         suspicious: 0,
+        trades: [],
       })
     }
 
     // Analyze trades
     const analyses = insiderDetector.analyzeBatch(tradesWithMarkets)
 
-    // Convert to database format
+    // Convert to response format
     const suspiciousTrades: SuspiciousTrade[] = analyses.map(analysis => ({
       market_id: analysis.market.condition_id,
       market_question: analysis.market.question,
@@ -46,43 +43,11 @@ export async function POST(request: Request) {
       market_resolved: analysis.market.closed,
     }))
 
-    // Store in Supabase (upsert to avoid duplicates)
-    let storedCount = 0
-    for (const trade of suspiciousTrades) {
-      const insertData: SuspiciousTradeInsert = {
-        market_id: trade.market_id,
-        market_question: trade.market_question,
-        trader_address: trade.trader_address,
-        outcome: trade.outcome,
-        price: trade.price,
-        size: trade.size,
-        timestamp: trade.timestamp,
-        suspicion_score: trade.suspicion_score,
-        suspicion_reasons: trade.suspicion_reasons,
-        market_resolved: trade.market_resolved ?? false,
-      }
-
-      const { error } = await supabase
-        .from('suspicious_trades')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .upsert(insertData as any, {
-          onConflict: 'market_id,trader_address,timestamp',
-          ignoreDuplicates: true,
-        })
-
-      if (!error) {
-        storedCount++
-      } else {
-        console.error('Error storing trade:', error)
-      }
-    }
-
     return NextResponse.json({
       success: true,
       analyzed: tradesWithMarkets.length,
       suspicious: analyses.length,
-      stored: storedCount,
-      trades: suspiciousTrades.slice(0, 10), // Return first 10 for preview
+      trades: suspiciousTrades,
     })
   } catch (error) {
     console.error('Error analyzing trades:', error)
@@ -111,13 +76,14 @@ export async function GET() {
         message: 'No trades found',
         analyzed: 0,
         suspicious: 0,
+        trades: [],
       })
     }
 
     // Analyze trades
     const analyses = insiderDetector.analyzeBatch(tradesWithMarkets)
 
-    // Convert to database format
+    // Convert to response format
     const suspiciousTrades: SuspiciousTrade[] = analyses.map(analysis => ({
       market_id: analysis.market.condition_id,
       market_question: analysis.market.question,
@@ -131,40 +97,11 @@ export async function GET() {
       market_resolved: analysis.market.closed,
     }))
 
-    // Store in Supabase
-    let storedCount = 0
-    for (const trade of suspiciousTrades) {
-      const insertData: SuspiciousTradeInsert = {
-        market_id: trade.market_id,
-        market_question: trade.market_question,
-        trader_address: trade.trader_address,
-        outcome: trade.outcome,
-        price: trade.price,
-        size: trade.size,
-        timestamp: trade.timestamp,
-        suspicion_score: trade.suspicion_score,
-        suspicion_reasons: trade.suspicion_reasons,
-        market_resolved: trade.market_resolved ?? false,
-      }
-
-      const { error } = await supabase
-        .from('suspicious_trades')
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .upsert(insertData as any, {
-          onConflict: 'market_id,trader_address,timestamp',
-          ignoreDuplicates: true,
-        })
-
-      if (!error) {
-        storedCount++
-      }
-    }
-
     return NextResponse.json({
       success: true,
       analyzed: tradesWithMarkets.length,
       suspicious: analyses.length,
-      stored: storedCount,
+      trades: suspiciousTrades,
     })
   } catch (error) {
     console.error('Error analyzing trades:', error)
