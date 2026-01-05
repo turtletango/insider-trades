@@ -74,11 +74,14 @@ export const mockSuspiciousTrades = [
 ];
 
 export const mockStats = {
-  totalSuspiciousTrades: 156,
-  highRiskTrades: 42,
-  averageSuspicionScore: 73.5,
-  uniqueTraders: 89,
-  last24Hours: 12,
+  success: true,
+  stats: {
+    total_suspicious_trades: 156,
+    high_suspicion_trades: 42,
+    average_suspicion_score: '73.50',
+    unique_suspicious_traders: 89,
+    recent_24h: 12,
+  },
 };
 
 export const mockPolymarketMarket = {
@@ -105,26 +108,19 @@ export const mockPolymarketTrade = {
 };
 
 export const mockAnalyzeResponse = {
+  success: true,
   analyzed: 100,
   suspicious: 3,
-  stored: 3,
   trades: mockSuspiciousTrades,
 };
 
 export const mockEmptyStats = {
-  totalSuspiciousTrades: 0,
-  highRiskTrades: 0,
-  averageSuspicionScore: 0,
-  uniqueTraders: 0,
-  last24Hours: 0,
-};
-
-export const mockEmptyTradesResponse = {
-  trades: [],
-  total: 0,
-};
-
-export const mockTradesResponse = {
-  trades: mockSuspiciousTrades,
-  total: mockSuspiciousTrades.length,
+  success: true,
+  stats: {
+    total_suspicious_trades: 0,
+    high_suspicion_trades: 0,
+    average_suspicion_score: '0.00',
+    unique_suspicious_traders: 0,
+    recent_24h: 0,
+  },
 };

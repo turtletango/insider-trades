@@ -21,37 +21,24 @@ export function TradesTable() {
   const [analyzing, setAnalyzing] = useState(false)
 
   useEffect(() => {
-    fetchTrades()
+    analyzeTrades()
   }, [])
-
-  const fetchTrades = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch('/api/trades?limit=50')
-      const data = await response.json()
-      if (data.success) {
-        setTrades(data.trades)
-      }
-    } catch (error) {
-      console.error('Error fetching trades:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const analyzeTrades = async () => {
     try {
       setAnalyzing(true)
+      setLoading(true)
       const response = await fetch('/api/analyze', { method: 'POST' })
       const data = await response.json()
       if (data.success) {
-        // Refresh the trades list
-        await fetchTrades()
+        // Set trades directly from analysis results
+        setTrades(data.trades || [])
       }
     } catch (error) {
       console.error('Error analyzing trades:', error)
     } finally {
       setAnalyzing(false)
+      setLoading(false)
     }
   }
 
