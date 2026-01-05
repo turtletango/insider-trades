@@ -5,6 +5,8 @@ import { supabase } from '@/lib/supabase'
 import type { SuspiciousTrade } from '@/types/polymarket'
 import type { Database } from '@/types/database'
 
+type SuspiciousTradeInsert = Database['public']['Tables']['suspicious_trades']['Insert']
+
 export const dynamic = 'force-dynamic'
 
 /**
@@ -47,9 +49,23 @@ export async function POST(request: Request) {
     // Store in Supabase (upsert to avoid duplicates)
     let storedCount = 0
     for (const trade of suspiciousTrades) {
+      const insertData: SuspiciousTradeInsert = {
+        market_id: trade.market_id,
+        market_question: trade.market_question,
+        trader_address: trade.trader_address,
+        outcome: trade.outcome,
+        price: trade.price,
+        size: trade.size,
+        timestamp: trade.timestamp,
+        suspicion_score: trade.suspicion_score,
+        suspicion_reasons: trade.suspicion_reasons,
+        market_resolved: trade.market_resolved ?? false,
+      }
+
       const { error } = await supabase
         .from('suspicious_trades')
-        .upsert(trade as any, {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .upsert(insertData as any, {
           onConflict: 'market_id,trader_address,timestamp',
           ignoreDuplicates: true,
         })
@@ -118,9 +134,23 @@ export async function GET() {
     // Store in Supabase
     let storedCount = 0
     for (const trade of suspiciousTrades) {
+      const insertData: SuspiciousTradeInsert = {
+        market_id: trade.market_id,
+        market_question: trade.market_question,
+        trader_address: trade.trader_address,
+        outcome: trade.outcome,
+        price: trade.price,
+        size: trade.size,
+        timestamp: trade.timestamp,
+        suspicion_score: trade.suspicion_score,
+        suspicion_reasons: trade.suspicion_reasons,
+        market_resolved: trade.market_resolved ?? false,
+      }
+
       const { error } = await supabase
         .from('suspicious_trades')
-        .upsert(trade as any, {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .upsert(insertData as any, {
           onConflict: 'market_id,trader_address,timestamp',
           ignoreDuplicates: true,
         })

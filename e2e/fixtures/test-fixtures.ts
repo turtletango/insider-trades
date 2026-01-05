@@ -32,6 +32,7 @@ export const test = base.extend<{
     // Mock the analyze API
     await mockApiEndpoint(page, '**/api/analyze*', mockAnalyzeResponse);
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use();
   },
 
@@ -50,6 +51,7 @@ export const test = base.extend<{
       trades: [],
     });
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use();
   },
 });

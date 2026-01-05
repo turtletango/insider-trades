@@ -1,5 +1,4 @@
 import { test, expect } from './fixtures/test-fixtures';
-import { waitForApiResponse, waitForElement } from './utils/test-helpers';
 
 test.describe('Integration Tests - Trade Analysis Workflow', () => {
   test.beforeEach(async ({ page }) => {
@@ -59,7 +58,7 @@ test.describe('Integration Tests - Trade Analysis Workflow', () => {
         const data = await response.json();
         expect(data).toHaveProperty('analyzed');
         expect(data).toHaveProperty('suspicious');
-      } catch (error) {
+      } catch {
         // If the API call doesn't happen, that's also okay (might be mocked differently)
         console.log('Note: Analyze API call not intercepted or timed out');
       }
@@ -96,7 +95,7 @@ test.describe('Integration Tests - Trade Analysis Workflow', () => {
 test.describe('Integration Tests - Trade Details', () => {
   test.use({ mockApis: undefined });
 
-  test.beforeEach(async ({ page, mockApis }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
   });
@@ -185,7 +184,7 @@ test.describe('Integration Tests - Trade Details', () => {
 test.describe('Integration Tests - Stats Dashboard', () => {
   test.use({ mockApis: undefined });
 
-  test.beforeEach(async ({ page, mockApis }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
   });
@@ -243,7 +242,7 @@ test.describe('Integration Tests - Stats Dashboard', () => {
 test.describe('Integration Tests - Empty State', () => {
   test.use({ mockEmptyApis: undefined });
 
-  test.beforeEach(async ({ page, mockEmptyApis }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
   });

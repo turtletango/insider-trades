@@ -88,7 +88,7 @@ export async function clickAndWaitForNavigation(
 export async function mockApiEndpoint(
   page: Page,
   urlPattern: string | RegExp,
-  response: any,
+  response: Record<string, unknown>,
   status = 200
 ) {
   await page.route(urlPattern, (route) => {

@@ -108,7 +108,7 @@ test.describe('API Endpoints', () => {
       const data = await response.json();
 
       // All returned trades should have score >= minScore
-      data.trades.forEach((trade: any) => {
+      data.trades.forEach((trade: { suspicion_score: number }) => {
         expect(trade.suspicion_score).toBeGreaterThanOrEqual(minScore);
       });
     });
