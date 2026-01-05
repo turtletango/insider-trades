@@ -1,60 +1,55 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { polymarketClient } from '@/lib/polymarket-client'
+import { insiderDetector } from '@/lib/insider-detection'
 
 export const dynamic = 'force-dynamic'
 
 /**
  * GET /api/stats
- * Returns statistics about suspicious trades
+ * Returns statistics about suspicious trades from current analysis
  */
 export async function GET() {
   try {
-    // Get total count
-    const { count: totalCount } = await supabase
-      .from('suspicious_trades')
-      .select('*', { count: 'exact', head: true })
+    // Fetch recent trades from Polymarket
+    const tradesWithMarkets = await polymarketClient.getRecentTrades(100)
 
-    // Get high suspicion count (score >= 80)
-    const { count: highSuspicionCount } = await supabase
-      .from('suspicious_trades')
-      .select('*', { count: 'exact', head: true })
-      .gte('suspicion_score', 80)
+    if (tradesWithMarkets.length === 0) {
+      return NextResponse.json({
+        success: true,
+        stats: {
+          total_suspicious_trades: 0,
+          high_suspicion_trades: 0,
+          average_suspicion_score: '0.00',
+          recent_24h: 0,
+          unique_suspicious_traders: 0,
+        },
+      })
+    }
 
-    // Get average suspicion score
-    const { data: avgData } = await supabase
-      .from('suspicious_trades')
-      .select('suspicion_score')
+    // Analyze trades
+    const analyses = insiderDetector.analyzeBatch(tradesWithMarkets)
 
-    const avgScore = avgData && avgData.length > 0
-      ? avgData.reduce((sum, t: { suspicion_score: number }) => sum + t.suspicion_score, 0) / avgData.length
+    // Calculate statistics
+    const totalCount = analyses.length
+    const highSuspicionCount = analyses.filter(a => a.suspicion_score >= 80).length
+    const avgScore = totalCount > 0
+      ? analyses.reduce((sum, a) => sum + a.suspicion_score, 0) / totalCount
       : 0
 
     // Get recent activity (last 24 hours)
-    const yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 1)
-
-    const { count: recentCount } = await supabase
-      .from('suspicious_trades')
-      .select('*', { count: 'exact', head: true })
-      .gte('created_at', yesterday.toISOString())
-
-    // Get top traders by suspicious activity
-    const { data: topTraders } = await supabase
-      .from('suspicious_trades')
-      .select('trader_address, suspicion_score')
-      .order('suspicion_score', { ascending: false })
-      .limit(10)
+    const yesterday = Date.now() / 1000 - 24 * 60 * 60
+    const recentCount = analyses.filter(a => a.trade.timestamp >= yesterday).length
 
     // Count unique traders
-    const uniqueTraders = new Set(topTraders?.map((t: { trader_address: string }) => t.trader_address) || [])
+    const uniqueTraders = new Set(analyses.map(a => a.trade.maker_address))
 
     return NextResponse.json({
       success: true,
       stats: {
-        total_suspicious_trades: totalCount || 0,
-        high_suspicion_trades: highSuspicionCount || 0,
+        total_suspicious_trades: totalCount,
+        high_suspicion_trades: highSuspicionCount,
         average_suspicion_score: avgScore.toFixed(2),
-        recent_24h: recentCount || 0,
+        recent_24h: recentCount,
         unique_suspicious_traders: uniqueTraders.size,
       },
     })

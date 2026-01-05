@@ -65,15 +65,12 @@ describe('TradesTable', () => {
   it('calls analyze endpoint when Analyze button is clicked', async () => {
     const user = userEvent.setup()
 
+    let callCount = 0
     global.fetch = vi.fn((url) => {
-      if (url === '/api/trades?limit=50') {
+      if (url === '/api/analyze') {
+        callCount++
         return Promise.resolve({
           json: () => Promise.resolve({ success: true, trades: [] }),
-        })
-      }
-      if (url === '/api/analyze') {
-        return Promise.resolve({
-          json: () => Promise.resolve({ success: true }),
         })
       }
       return Promise.reject(new Error('Unknown endpoint'))
@@ -85,10 +82,15 @@ describe('TradesTable', () => {
       expect(screen.getByText(/No suspicious trades found/)).toBeInTheDocument()
     })
 
+    // First call is from initial useEffect
+    expect(callCount).toBe(1)
+
     const analyzeButton = screen.getByRole('button', { name: /Analyze New Trades/i })
     await user.click(analyzeButton)
 
     await waitFor(() => {
+      // Second call is from button click
+      expect(callCount).toBe(2)
       expect(global.fetch).toHaveBeenCalledWith('/api/analyze', { method: 'POST' })
     })
   })
@@ -96,17 +98,19 @@ describe('TradesTable', () => {
   it('shows analyzing state when analyze button is clicked', async () => {
     const user = userEvent.setup()
 
+    let firstCall = true
     global.fetch = vi.fn((url) => {
-      if (url === '/api/trades?limit=50') {
-        return Promise.resolve({
-          json: () => Promise.resolve({ success: true, trades: [] }),
-        })
-      }
       if (url === '/api/analyze') {
+        if (firstCall) {
+          firstCall = false
+          return Promise.resolve({
+            json: () => Promise.resolve({ success: true, trades: [] }),
+          })
+        }
         return new Promise((resolve) => {
           setTimeout(() => {
             resolve({
-              json: () => Promise.resolve({ success: true }),
+              json: () => Promise.resolve({ success: true, trades: [] }),
             })
           }, 100)
         })
