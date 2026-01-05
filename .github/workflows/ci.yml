@@ -42,6 +42,7 @@ jobs:
           path: .next
           retention-days: 1
           if-no-files-found: error
+          include-hidden-files: true
 
   unit-tests:
     needs: build
